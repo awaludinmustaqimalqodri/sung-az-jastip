@@ -80,7 +80,7 @@
     </div>
 
     <script>
-        let authMode = 'login';
+        let authMode = 'login';         const demoCustomers = [             { nama: 'Pelanggan Demo 1', wa: '0800000001', alamat: 'Alamat Demo 1', email: 'demo1@sungaz.test', pass: 'Demo1234' },             { nama: 'Pelanggan Demo 2', wa: '0800000002', alamat: 'Alamat Demo 2', email: 'demo2@sungaz.test', pass: 'Demo1234' }         ];         const savedCustomers = JSON.parse(localStorage.getItem('sung_az_customers')) || [];         demoCustomers.forEach(demoCustomer => {             if (!savedCustomers.some(customer => customer.email === demoCustomer.email)) {                 savedCustomers.push(demoCustomer);             }         });         localStorage.setItem('sung_az_customers', JSON.stringify(savedCustomers));
 
         function setMode(mode) {
             authMode = mode;
