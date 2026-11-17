@@ -50,6 +50,7 @@ const initialData = {
             metodeBayar: 'QRIS',
             statusBayar: 'Lunas',
             statusPesanan: 'Sedang Diantar',
+            kurir: 'JNE REG',
             alamat: 'Alamat demo, Kab. Bogor'
         }
     ]

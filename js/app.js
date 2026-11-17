@@ -123,12 +123,14 @@ function closeCheckout() {
 
 function recalculateCheckout() {
     if (!selectedProduct) return;
-    const ongkir = 0;
+    const courierSelect = document.getElementById('checkout-courier');
+    const selectedCourier = courierSelect.selectedOptions[0];
+    const ongkir = Number(selectedCourier.dataset.ongkir);
     const total = selectedProduct.hargaAsli + selectedProduct.jastipFee + ongkir;
 
     document.getElementById('calc-harga').innerText = formatRupiah(selectedProduct.hargaAsli);
     document.getElementById('calc-fee').innerText = formatRupiah(selectedProduct.jastipFee);
-    document.getElementById('calc-ongkir').innerText = 'Rp 0 (Gratis Ongkir)';
+    document.getElementById('calc-ongkir').innerText = `${selectedCourier.value} - ${formatRupiah(ongkir)} (estimasi)`;
     document.getElementById('calc-total').innerText = formatRupiah(total);
 }
 
@@ -141,7 +143,9 @@ function togglePaymentDetails() {
 
 function submitOrder() {
     const db = getDB();
-    const ongkir = 0;
+    const courierSelect = document.getElementById('checkout-courier');
+    const selectedCourier = courierSelect.selectedOptions[0];
+    const ongkir = Number(selectedCourier.dataset.ongkir);
     const metode = document.getElementById('checkout-payment').value;
     const alamat = document.getElementById('prof-alamat').value;
 
@@ -150,6 +154,7 @@ function submitOrder() {
         produkNama: selectedProduct.nama,
         hargaAsli: selectedProduct.hargaAsli,
         jastipFee: selectedProduct.jastipFee,
+        kurir: selectedCourier.value,
         ongkir: ongkir,
         total: selectedProduct.hargaAsli + selectedProduct.jastipFee + ongkir,
         metodeBayar: metode,
@@ -179,6 +184,7 @@ function renderUserOrders() {
                 </div>
                 <h4 class="font-bold text-sungDark mt-2">${o.produkNama}</h4>
                 <p class="text-xs text-slate-500 mt-0.5">Tujuan: ${o.alamat}</p>
+                <p class="text-xs text-slate-500 mt-0.5">Kurir: ${o.kurir || '-'}</p>
                 <p class="text-sm font-extrabold text-sungOrange mt-1">Total: ${formatRupiah(o.total)}</p>
             </div>
             <div class="text-right space-y-2">
@@ -246,6 +252,7 @@ function renderOwnerDashboard() {
                     ).join('')}
                 </select>
             </td>
+            <td class="p-3 text-xs">${o.kurir || '-'}</td>
         </tr>
     `).join('');
 
