@@ -144,6 +144,7 @@
                             <th class="p-3">Total & Metode Bayar</th>
                             <th class="p-3">Status Pembayaran</th>
                             <th class="p-3">Status Pesanan</th>
+                            <th class="p-3">Kurir</th>
                         </tr>
                     </thead>
                     <tbody id="owner-orders-table" class="divide-y">
@@ -188,6 +189,15 @@
             </div>
 
             <div id="checkout-item-info" class="mb-4 bg-slate-50 p-3 rounded-xl border"></div>
+
+            <div class="mb-4">
+                <label for="checkout-courier" class="block text-xs font-bold uppercase text-slate-600 mb-2">Pilih Layanan Kurir JNE</label>
+                <select id="checkout-courier" onchange="recalculateCheckout()" class="w-full border rounded-xl p-2.5 text-sm font-semibold">
+                    <option value="JNE REG" data-ongkir="15000">JNE Reguler (estimasi 2-3 hari) - Rp 15.000</option>
+                    <option value="JNE YES" data-ongkir="25000">JNE YES (estimasi 1 hari) - Rp 25.000</option>
+                </select>
+                <p class="text-[11px] text-slate-500 mt-1">Tarif dan estimasi waktu hanya contoh untuk demo.</p>
+            </div>
 
             <!-- Kalkulator Harga Transparan -->
             <div class="bg-teal-50/60 border border-sungTeal/30 rounded-xl p-4 space-y-2 text-sm mb-4">

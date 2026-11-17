@@ -29,6 +29,7 @@ CREATE TABLE pesanan (
     harga_barang DECIMAL(12,2) NOT NULL,
     biaya_jastip DECIMAL(12,2) NOT NULL,
     ongkir DECIMAL(12,2) NOT NULL,
+    kurir_pengiriman VARCHAR(30) NULL,
     total_bayar DECIMAL(12,2) NOT NULL,
     metode_pembayaran ENUM('QRIS', 'Transfer Bank', 'E-Wallet / COD') NOT NULL,
     bukti_transfer_url TEXT NULL,
