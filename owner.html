@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Owner - SUNG AZ Jastip</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        sungTeal: '#0F4C5C',
+                        sungOrange: '#F3722C',
+                        sungDark: '#0B2536'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans">
+
+    <!-- PROTEKSI HALAMAN: Cek apakah sudah login -->
+    <script>
+        if (localStorage.getItem('sung_az_is_logged_in') !== 'true') {
+            alert('Akses ditolak! Silakan login terlebih dahulu.');
+            window.location.href = 'login.html';
+        }
+        function handleLogout() {
+            localStorage.removeItem('sung_az_is_logged_in');
+            window.location.href = 'login.html';
+        }
+    </script>
+
+    <!-- NAVBAR OWNER -->
+    <nav class="bg-white shadow-md sticky top-0 z-50 border-b-2 border-sungOrange">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="bg-sungOrange text-white font-black px-3 py-2 rounded-lg text-sm">OWNER</div>
+                <div>
+                    <h1 class="text-lg font-extrabold text-sungDark">SUNG AZ Management</h1>
+                    <p class="text-xs text-sungOrange italic">Panel Kontrol Pemilik</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <a href="index.html" class="text-xs font-bold bg-slate-100 hover:bg-slate-200 px-3 py-2 rounded-lg text-slate-700">
+                    <i class="fa-solid fa-house mr-1"></i> Lihat Web Utama
+                </a>
+                <button onclick="handleLogout()" class="text-xs font-bold bg-red-50 hover:bg-red-100 text-red-600 px-3 py-2 rounded-lg">
+                    <i class="fa-solid fa-right-from-bracket mr-1"></i> Keluar
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- KONTEN DASHBOARD OWNER -->
+    <main class="max-w-7xl mx-auto px-4 py-6 space-y-8">
+        <!-- 1. Ringkasan & Grafik -->
+        <section>
+            <h2 class="text-xl font-bold text-sungDark mb-4">Ringkasan Bisnis SUNG AZ</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                <div class="bg-white p-5 rounded-2xl shadow border-l-4 border-sungTeal">
+                    <p class="text-xs text-slate-500 font-bold uppercase">Total Pendapatan</p>
+                    <h3 id="stat-pendapatan" class="text-2xl font-extrabold text-sungDark mt-1">Rp 0</h3>
+                </div>
+                <div class="bg-white p-5 rounded-2xl shadow border-l-4 border-sungOrange">
+                    <p class="text-xs text-slate-500 font-bold uppercase">Total Pesanan Masuk</p>
+                    <h3 id="stat-masuk" class="text-2xl font-extrabold text-sungDark mt-1">0 Pesanan</h3>
+                </div>
+                <div class="bg-white p-5 rounded-2xl shadow border-l-4 border-emerald-500">
+                    <p class="text-xs text-slate-500 font-bold uppercase">Pesanan Selesai</p>
+                    <h3 id="stat-selesai" class="text-2xl font-extrabold text-emerald-600 mt-1">0 Pesanan</h3>
+                </div>
+            </div>
+            <div class="bg-white p-5 rounded-2xl shadow">
+                <h4 class="text-sm font-bold text-slate-600 mb-3">Grafik Penjualan Mingguan</h4>
+                <canvas id="salesChart" height="80"></canvas>
+            </div>
+        </section>
+
+        <!-- 2. Manajemen Pesanan -->
+        <section class="bg-white p-6 rounded-2xl shadow">
+            <h2 class="text-lg font-bold text-sungDark mb-4">Manajemen Pesanan & Verifikasi Pembayaran</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-sm">
+                    <thead>
+                        <tr class="bg-slate-100 text-slate-700 border-b">
+                            <th class="p-3">ID Order</th>
+                            <th class="p-3">Produk / Request</th>
+                            <th class="p-3">Total & Metode</th>
+                            <th class="p-3">Status Bayar</th>
+                            <th class="p-3">Status Pesanan</th>
+                        </tr>
+                    </thead>
+                    <tbody id="owner-orders-table" class="divide-y"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 3. Manajemen Produk -->
+        <div class="grid grid-cols-1 gap-6">
+            <section class="bg-white p-6 rounded-2xl shadow space-y-4">
+                <h2 class="text-lg font-bold text-sungDark">Manajemen Produk & Request Jastip</h2>
+                <form onsubmit="ownerAddProduct(event)" class="grid grid-cols-2 gap-3 bg-slate-50 p-4 rounded-xl border">
+                    <input type="text" id="new-prod-nama" placeholder="Nama Barang" required class="col-span-2 border rounded p-2 text-sm">
+                    <select id="new-prod-kat" class="border rounded p-2 text-sm">
+                        <option value="Tiket Konser">Tiket Konser</option>
+                        <option value="Fashion">Fashion</option>
+                        <option value="Elektronik">Elektronik</option>
+                        <option value="Kuliner">Kuliner</option>
+                    </select>
+                    <input type="number" id="new-prod-harga" placeholder="Harga Asli (Rp)" required class="border rounded p-2 text-sm">
+                    <input type="number" id="new-prod-fee" placeholder="Jastip Fee (Rp)" required class="border rounded p-2 text-sm">
+                    <button type="submit" class="bg-sungTeal text-white font-bold rounded p-2 text-sm">+ Tambah Katalog</button>
+                </form>
+                <div id="owner-product-list" class="space-y-2 max-h-64 overflow-y-auto"></div>
+            </section>
+
+        </div>
+    </main>
+
+    <script src="js/database.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        // Otomatis render dashboard owner saat file dibuka
+        document.addEventListener('DOMContentLoaded', () => {
+            renderOwnerDashboard();
+        });
+    </script>
+</body>
+</html>

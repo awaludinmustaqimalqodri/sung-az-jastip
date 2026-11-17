@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Pelanggan - SUNG AZ Jastip</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        sungTeal: '#0F4C5C',
+                        sungOrange: '#F3722C',
+                        sungDark: '#0B2536'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-100 min-h-screen py-10 flex items-center justify-center px-4">
+
+    <div class="bg-white p-8 rounded-2xl shadow-xl max-w-lg w-full border-t-4 border-sungOrange space-y-6">
+        <div class="text-center">
+            <h1 class="text-2xl font-extrabold text-sungDark">Pendaftaran Akun SUNG AZ</h1>
+            <p class="text-xs text-sungOrange font-bold mt-1">Verifikasi Biometrik (Scan KTP & Wajah)</p>
+        </div>
+
+        <form onsubmit="handleRegister(event)" class="space-y-4 text-sm">
+            <div>
+                <label class="block font-semibold mb-1">Nama Lengkap (Sesuai KTP)</label>
+                <input type="text" id="reg-nama" required class="w-full border rounded-xl p-3 focus:ring-2 focus:ring-sungTeil outline-none">
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                    <label class="block font-semibold mb-1">Nomor WhatsApp</label>
+                    <input type="text" id="reg-wa" required placeholder="628xxxxxxxxxx" class="w-full border rounded-xl p-3 focus:ring-2 focus:ring-sungTeil outline-none">
+                </div>
+                <div>
+                    <label class="block font-semibold mb-1">Kata Sandi (Password)</label>
+                    <input type="password" id="reg-pass" required class="w-full border rounded-xl p-3 focus:ring-2 focus:ring-sungTeil outline-none">
+                </div>
+            </div>
+
+            <!-- Bagian Scan KTP -->
+            <div class="bg-slate-50 p-4 rounded-xl border space-y-2">
+                <label class="block font-bold text-xs uppercase text-sungDark">1. Verifikasi Scan KTP</label>
+                <div class="flex items-center gap-3">
+                    <button type="button" onclick="openCamera('ktp')" class="bg-sungTeal text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-sungDark">
+                        <i class="fa-solid fa-id-card mr-1"></i> Buka Kamera Scan KTP
+                    </button>
+                    <span id="status-ktp" class="text-xs text-slate-500 italic">Belum dipindai</span>
+                </div>
+                <div id="preview-ktp-container" class="hidden mt-2">
+                    <video id="video-ktp" autoplay playsinline class="w-full h-40 object-cover rounded-lg border"></video>
+                    <button type="button" onclick="captureKTP()" class="mt-2 w-full bg-emerald-600 text-white py-1.5 rounded-lg text-xs font-bold">Ambil Foto KTP</button>
+                </div>
+                <canvas id="canvas-ktp" class="hidden"></canvas>
+                <img id="result-ktp" class="hidden w-full h-32 object-cover rounded-lg border mt-2">
+            </div>
+
+            <!-- Bagian Scan Wajah -->
+            <div class="bg-slate-50 p-4 rounded-xl border space-y-2">
+                <label class="block font-bold text-xs uppercase text-sungDark">2. Verifikasi Scan Wajah (Liveness)</label>
+                <div class="flex items-center gap-3">
+                    <button type="button" onclick="openCamera('wajah')" class="bg-sungOrange text-white px-4 py-2 rounded-lg text-xs font-bold hover:opacity-90">
+                        <i class="fa-solid fa-face-smile mr-1"></i> Buka Kamera Scan Wajah
+                    </button>
+                    <span id="status-wajah" class="text-xs text-slate-500 italic">Belum dipindai</span>
+                </div>
+                <div id="preview-wajah-container" class="hidden mt-2">
+                    <video id="video-wajah" autoplay playsinline class="w-full h-40 object-cover rounded-lg border"></video>
+                    <button type="button" onclick="captureWajah()" class="mt-2 w-full bg-emerald-600 text-white py-1.5 rounded-lg text-xs font-bold">Ambil Foto Wajah</button>
+                </div>
+                <canvas id="canvas-wajah" class="hidden"></canvas>
+                <img id="result-wajah" class="hidden w-full h-32 object-cover rounded-lg border mt-2">
+            </div>
+
+            <button type="submit" class="w-full bg-sungDark hover:bg-sungTeal text-white font-bold py-3 rounded-xl shadow-lg transition">
+                Daftar & Verifikasi Akun
+            </button>
+        </form>
+
+        <div class="text-center text-xs">
+            Sudah punya akun? <a href="login-pelanggan.html" class="text-sungOrange font-bold hover:underline">Masuk di sini</a>
+        </div>
+    </div>
+
+    <script>
+        let currentStream = null;
+        let ktpVerified = false;
+        let wajahVerified = false;
+
+        async function openCamera(type) {
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+            }
+            const videoElem = document.getElementById(`video-${type}`);
+            document.getElementById(`preview-${type}-container`).classList.remove('hidden');
+
+            try {
+                currentStream = await navigator.mediaDevices.getUserMedia({ video: true });
+                videoElem.srcObject = currentStream;
+            } catch (err) {
+                alert('Tidak dapat mengakses kamera. Pastikan izin kamera diaktifkan di browser.');
+            }
+        }
+
+        function captureKTP() {
+            const video = document.getElementById('video-ktp');
+            const canvas = document.getElementById('canvas-ktp');
+            canvas.width = video.videoWidth || 300;
+            canvas.height = video.videoHeight || 150;
+            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            const dataUrl = canvas.toDataURL('image/png');
+            const resultImg = document.getElementById('result-ktp');
+            resultImg.src = dataUrl;
+            resultImg.classList.remove('hidden');
+            video.style.display = 'none';
+            document.getElementById('preview-ktp-container').classList.add('hidden');
+            
+            if (currentStream) currentStream.getTracks().forEach(t => t.stop());
+            ktpVerified = true;
+            document.getElementById('status-ktp').innerHTML = '<span class="text-emerald-600 font-bold">✓ KTP Berhasil Dipindai</span>';
+        }
+
+        function captureWajah() {
+            const video = document.getElementById('video-wajah');
+            const canvas = document.getElementById('canvas-wajah');
+            canvas.width = video.videoWidth || 300;
+            canvas.height = video.videoHeight || 150;
+            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            const dataUrl = canvas.toDataURL('image/png');
+            const resultImg = document.getElementById('result-wajah');
+            resultImg.src = dataUrl;
+            resultImg.classList.remove('hidden');
+            video.style.display = 'none';
+            document.getElementById('preview-wajah-container').classList.add('hidden');
+            
+            if (currentStream) currentStream.getTracks().forEach(t => t.stop());
+            wajahVerified = true;
+            document.getElementById('status-wajah').innerHTML = '<span class="text-emerald-600 font-bold">✓ Wajah Berhasil Dipindai</span>';
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            if (!ktpVerified || !wajahVerified) {
+                alert('Mohon selesaikan Scan KTP dan Scan Wajah terlebih dahulu!');
+                return;
+            }
+
+            const userData = {
+                nama: document.getElementById('reg-nama').value,
+                wa: document.getElementById('reg-wa').value,
+                pass: document.getElementById('reg-pass').value
+            };
+
+            localStorage.setItem('sung_az_user_registered', JSON.stringify(userData));
+            alert('Pendaftaran berhasil! Akun Anda telah terverifikasi KTP & Wajah. Silakan Masuk.');
+            window.location.href = 'login-pelanggan.html';
+        }
+    </script>
+</body>
+</html>

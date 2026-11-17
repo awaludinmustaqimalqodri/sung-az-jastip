@@ -1,0 +1,9 @@
+/* Custom Scrollbar & Smooth Transitions */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-thumb {
+    background: #0F4C5C;
+    border-radius: 9999px;
+}

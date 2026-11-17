@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Masuk & Daftar Pelanggan - SUNG AZ Jastip</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        sungTeal: '#0F4C5C',
+                        sungOrange: '#F3722C',
+                        sungDark: '#0B2536'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-100 min-h-screen flex items-center justify-center px-4 py-8 font-sans">
+
+    <div class="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full border-t-4 border-sungTeal space-y-6">
+        <!-- Header Brand -->
+        <div class="text-center">
+            <h1 class="text-2xl font-extrabold text-sungDark tracking-tight">SUNG AZ JASTIP</h1>
+            <p class="text-xs text-sungOrange font-bold italic mt-0.5">"Apa bae dimare bae"</p>
+            <p id="auth-subtitle" class="text-xs text-slate-500 mt-2">Masuk ke akun pelanggan Anda</p>
+        </div>
+
+        <!-- Pengalih Mode: Masuk vs Daftar -->
+        <div class="grid grid-cols-2 bg-slate-100 p-1 rounded-xl border">
+            <button type="button" id="btn-mode-login" onclick="setMode('login')" class="py-2 text-xs font-bold rounded-lg bg-white text-sungDark shadow-sm transition">
+                Masuk (Login)
+            </button>
+            <button type="button" id="btn-mode-register" onclick="setMode('register')" class="py-2 text-xs font-bold rounded-lg text-slate-500 hover:text-sungDark transition">
+                Daftar Akun
+            </button>
+        </div>
+
+        <!-- Form Login & Daftar -->
+        <form onsubmit="processCustomerAuth(event)" class="space-y-4 text-sm">
+            <!-- Form Tambahan Khusus Daftar Akun -->
+            <div id="extra-register-fields" class="hidden space-y-4">
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Nama Lengkap</label>
+                    <input type="text" id="cust-nama" placeholder="Masukkan nama lengkap" class="w-full border border-slate-300 rounded-xl p-3 focus:ring-2 focus:ring-sungTeal outline-none">
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Nomor WhatsApp</label>
+                    <input type="tel" id="cust-wa" placeholder="0812xxxxxxxx" class="w-full border border-slate-300 rounded-xl p-3 focus:ring-2 focus:ring-sungTeal outline-none">
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Alamat Pengiriman Utama</label>
+                    <textarea id="cust-alamat" rows="2" placeholder="Contoh: Jl. Merdeka No. 10, Bekasi" class="w-full border border-slate-300 rounded-xl p-3 focus:ring-2 focus:ring-sungTeal outline-none"></textarea>
+                </div>
+            </div>
+
+            <!-- Form Email & Password -->
+            <div>
+                <label class="block font-semibold text-slate-700 mb-1">Alamat Email</label>
+                <input type="email" id="cust-email" required placeholder="nama@email.com" class="w-full border border-slate-300 rounded-xl p-3 focus:ring-2 focus:ring-sungTeal outline-none">
+            </div>
+            <div>
+                <label class="block font-semibold text-slate-700 mb-1">Kata Sandi</label>
+                <input type="password" id="cust-pass" required placeholder="Minimal 6 karakter" class="w-full border border-slate-300 rounded-xl p-3 focus:ring-2 focus:ring-sungTeal outline-none">
+            </div>
+
+            <button type="submit" id="btn-auth-submit" class="w-full bg-sungTeal hover:bg-sungDark text-white font-bold py-3 rounded-xl shadow-md transition">
+                Masuk Sekarang
+            </button>
+        </form>
+
+        <!-- Navigasi Bawah -->
+        <div class="text-center text-xs text-slate-500 pt-2 border-t flex justify-between">
+            <a href="index.html" class="hover:text-sungTeal hover:underline">← Kembali ke Katalog</a>
+            <a href="login.html" class="hover:text-sungOrange hover:underline">Login Owner →</a>
+        </div>
+    </div>
+
+    <script>
+        let authMode = 'login';
+
+        function setMode(mode) {
+            authMode = mode;
+            const btnLogin = document.getElementById('btn-mode-login');
+            const btnRegister = document.getElementById('btn-mode-register');
+            const extraFields = document.getElementById('extra-register-fields');
+            const btnSubmit = document.getElementById('btn-auth-submit');
+            const subtitle = document.getElementById('auth-subtitle');
+
+            const inputNama = document.getElementById('cust-nama');
+            const inputWa = document.getElementById('cust-wa');
+            const inputAlamat = document.getElementById('cust-alamat');
+
+            if (mode === 'register') {
+                btnRegister.className = 'py-2 text-xs font-bold rounded-lg bg-white text-sungDark shadow-sm transition';
+                btnLogin.className = 'py-2 text-xs font-bold rounded-lg text-slate-500 hover:text-sungDark transition';
+                extraFields.classList.remove('hidden');
+                subtitle.innerText = 'Buat akun pelanggan baru SUNG AZ';
+                btnSubmit.innerText = 'Daftar Akun Baru';
+                btnSubmit.classList.replace('bg-sungTeal', 'bg-sungOrange');
+
+                inputNama.required = true;
+                inputWa.required = true;
+                inputAlamat.required = true;
+            } else {
+                btnLogin.className = 'py-2 text-xs font-bold rounded-lg bg-white text-sungDark shadow-sm transition';
+                btnRegister.className = 'py-2 text-xs font-bold rounded-lg text-slate-500 hover:text-sungDark transition';
+                extraFields.classList.add('hidden');
+                subtitle.innerText = 'Masuk ke akun pelanggan Anda';
+                btnSubmit.innerText = 'Masuk Sekarang';
+                btnSubmit.classList.replace('bg-sungOrange', 'bg-sungTeal');
+
+                inputNama.required = false;
+                inputWa.required = false;
+                inputAlamat.required = false;
+            }
+        }
+
+        function processCustomerAuth(e) {
+            e.preventDefault();
+            const email = document.getElementById('cust-email').value.trim().toLowerCase();
+            const pass = document.getElementById('cust-pass').value;
+
+            const customers = JSON.parse(localStorage.getItem('sung_az_customers')) || [];
+
+            if (authMode === 'register') {
+                const nama = document.getElementById('cust-nama').value.trim();
+                const wa = document.getElementById('cust-wa').value.trim();
+                const alamat = document.getElementById('cust-alamat').value.trim();
+
+                if (pass.length < 6) {
+                    alert('Kata sandi minimal harus 6 karakter.');
+                    return;
+                }
+
+                if (customers.some(c => c.email === email)) {
+                    alert('Alamat Gmail ini sudah terdaftar. Silakan langsung masuk.');
+                    setMode('login');
+                    return;
+                }
+
+                const newCustomer = { nama, wa, alamat, email, pass };
+                customers.push(newCustomer);
+                localStorage.setItem('sung_az_customers', JSON.stringify(customers));
+
+                alert('Pendaftaran akun berhasil! Silakan masuk menggunakan akun baru Anda.');
+                setMode('login');
+            } else {
+                const user = customers.find(c => c.email === email && c.pass === pass);
+                if (user) {
+                    startCustomerSession(user);
+                    alert(`Selamat datang kembali, ${user.nama}!`);
+                    window.location.href = 'index.html';
+                } else {
+                    alert('Email atau kata sandi salah, atau akun belum terdaftar.');
+                }
+            }
+        }
+
+        function startCustomerSession(userObj) {
+            localStorage.setItem('sung_az_customer_logged_in', 'true');
+            localStorage.setItem('sung_az_active_customer', JSON.stringify(userObj));
+        }
+    </script>
+</body>
+</html>

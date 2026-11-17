@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SUNG AZ - Web Jasa Titip & Logistik | Apa Bae Dimari Bae</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js untuk Grafik Owner -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        sungTeal: '#0F4C5C',
+                        sungOrange: '#F3722C',
+                        sungDark: '#0B2536'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<script>
+    if (localStorage.getItem('sung_az_customer_logged_in') !== 'true') {
+        window.location.href = 'login-pelanggan.html';
+    }
+</script>
+<body class="bg-slate-50 text-slate-800 font-sans">
+
+    <!-- NAVBAR UTAMA & SWITCH ROLE -->
+    <nav class="bg-white shadow-md sticky top-0 z-50 border-b-2 border-sungOrange">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <img src="assets/Logo-sung-az.jpg" alt="Logo SUNG AZ" onerror="this.src='https://placehold.co/60x60/0F4C5C/white?text=SAZ'" class="h-12 w-12 object-cover rounded-lg shadow">
+                <div>
+                    <h1 class="text-xl font-extrabold text-sungDark tracking-tight">SUNG AZ</h1>
+                    <p class="text-xs font-semibold text-sungOrange italic">Apa Bae Dimari Bae</p>
+                </div>
+            <!-- Tombol Keluar (Logout) Pelanggan -->
+<button onclick="logoutCustomer()" class="text-xs font-bold bg-red-50 hover:bg-red-100 text-red-600 px-3 py-2 rounded-xl border border-red-200 transition flex items-center gap-1.5">
+    <i class="fa-solid fa-right-from-bracket"></i>
+    <span>Keluar</span>
+</button></div>
+        
+        <!-- Sub-Navigasi Pembeli -->
+        <div class="flex flex-wrap gap-2 mb-6 border-b pb-3">
+            <button onclick="showUserTab('katalog')" class="user-tab-btn px-4 py-2 rounded-lg bg-sungOrange text-white font-semibold text-sm">Katalog & Request Jastip</button>
+            <button onclick="showUserTab('riwayat')" class="user-tab-btn px-4 py-2 rounded-lg bg-white border text-slate-700 font-semibold text-sm">Riwayat Pesanan</button>
+            <button onclick="showUserTab('profil')" class="user-tab-btn px-4 py-2 rounded-lg bg-white border text-slate-700 font-semibold text-sm">Profil & Alamat</button>
+        </div>
+
+        <!-- TAB 1: KATALOG & REQUEST JASTIP -->
+        <section id="tab-user-katalog">
+            <!-- Filter 5 Kategori Utama -->
+            <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="filterKategori('Semua')" class="kat-btn px-3 py-1.5 rounded-full text-xs font-bold bg-sungDark text-white">Semua</button>
+                    <button onclick="filterKategori('Tiket Konser')" class="kat-btn px-3 py-1.5 rounded-full text-xs font-bold bg-white border hover:bg-slate-100">🎫 Tiket Konser</button>
+                    <button onclick="filterKategori('Fashion')" class="kat-btn px-3 py-1.5 rounded-full text-xs font-bold bg-white border hover:bg-slate-100">👕 Barang (Fashion)</button>
+                    <button onclick="filterKategori('Elektronik')" class="kat-btn px-3 py-1.5 rounded-full text-xs font-bold bg-white border hover:bg-slate-100">📱 Barang (Elektronik)</button>
+                    <button onclick="filterKategori('Kuliner')" class="kat-btn px-3 py-1.5 rounded-full text-xs font-bold bg-white border hover:bg-slate-100">🍜 Kuliner / Oleh-oleh</button>
+                    <button onclick="openRequestModal()" class="px-3 py-1.5 rounded-full text-xs font-bold bg-sungOrange text-white shadow hover:opacity-90">+ Request Jastip Custom</button>
+                </div>
+            </div>
+
+            <!-- Grid Katalog Produk -->
+            <div id="katalog-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Di-render otomatis oleh app.js -->
+            </div>
+        </section>
+
+        <!-- TAB 2: RIWAYAT PESANAN -->
+        <section id="tab-user-riwayat" class="hidden space-y-6">
+            <h2 class="text-xl font-bold text-sungDark">Riwayat Pesanan Saya</h2>
+            <div id="user-orders-list" class="space-y-4">
+                <!-- Daftar pesanan pembeli -->
+            </div>
+
+            
+
+        <!-- TAB 3: PROFIL & ALAMAT PENGIRIMAN -->
+        <section id="tab-user-profil" class="hidden max-w-xl bg-white p-6 rounded-2xl shadow">
+            <h2 class="text-xl font-bold text-sungDark mb-4">Pengaturan Profil & Alamat</h2>
+            <form onsubmit="saveUserProfile(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold mb-1">Nama Lengkap</label>
+                    <input type="text" id="prof-nama" value="Pelanggan Demo" class="w-full border rounded-lg p-2.5 text-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1">Nomor WhatsApp</label>
+                    <input type="text" id="prof-wa" value="08xxxxxxxxxx" class="w-full border rounded-lg p-2.5 text-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1">Alamat Lengkap Pengiriman</label>
+                    <textarea id="prof-alamat" rows="3" class="w-full border rounded-lg p-2.5 text-sm">Alamat demo, Kab. Bogor, Jawa Barat</textarea>
+                </div>
+                <button type="submit" class="bg-sungTeal text-white px-5 py-2.5 rounded-lg font-bold text-sm">Simpan Perubahan</button>
+            </form>
+        </section>
+    </main>
+
+    <!-- ===================================================================== -->
+    <!-- B. ANTARMUKA DASHBOARD PEMILIK (OWNER DASHBOARD)                      -->
+    <!-- ===================================================================== -->
+    <main id="view-owner" class="hidden max-w-7xl mx-auto px-4 py-6 space-y-8">
+        
+        <!-- 1. RINGKASAN BISNIS & GRAFIK -->
+        <section>
+            <h2 class="text-xl font-bold text-sungDark mb-4">Ringkasan Bisnis SUNG AZ</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                <div class="bg-white p-5 rounded-2xl shadow border-l-4 border-sungTeal">
+                    <p class="text-xs text-slate-500 font-bold uppercase">Total Pendapatan (Jastip + Barang)</p>
+                    <h3 id="stat-pendapatan" class="text-2xl font-extrabold text-sungDark mt-1">Rp 0</h3>
+                </div>
+                <div class="bg-white p-5 rounded-2xl shadow border-l-4 border-sungOrange">
+                    <p class="text-xs text-slate-500 font-bold uppercase">Total Pesanan Masuk</p>
+                    <h3 id="stat-masuk" class="text-2xl font-extrabold text-sungDark mt-1">0 Pesanan</h3>
+                </div>
+                <div class="bg-white p-5 rounded-2xl shadow border-l-4 border-emerald-500">
+                    <p class="text-xs text-slate-500 font-bold uppercase">Pesanan Selesai</p>
+                    <h3 id="stat-selesai" class="text-2xl font-extrabold text-emerald-600 mt-1">0 Pesanan</h3>
+                </div>
+            </div>
+            <div class="bg-white p-5 rounded-2xl shadow">
+                <h4 class="text-sm font-bold text-slate-600 mb-3">Grafik Penjualan Mingguan</h4>
+                <canvas id="salesChart" height="80"></canvas>
+            </div>
+        </section>
+
+        <!-- 2. MANAJEMEN PESANAN & VERIFIKASI BAYAR -->
+        <section class="bg-white p-6 rounded-2xl shadow">
+            <h2 class="text-lg font-bold text-sungDark mb-4">Manajemen Pesanan & Verifikasi Pembayaran</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-sm">
+                    <thead>
+                        <tr class="bg-slate-100 text-slate-700 border-b">
+                            <th class="p-3">ID Order</th>
+                            <th class="p-3">Produk / Request</th>
+                            <th class="p-3">Total & Metode Bayar</th>
+                            <th class="p-3">Status Pembayaran</th>
+                            <th class="p-3">Status Pesanan</th>
+                        </tr>
+                    </thead>
+                    <tbody id="owner-orders-table" class="divide-y">
+                        <!-- Di-render oleh app.js -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 3. MANAJEMEN PRODUK & VERIFIKASI REQUEST CUSTOM -->
+        <div class="grid grid-cols-1 gap-6">
+            <!-- Tambah Produk & Verifikasi Request Pembeli -->
+            <section class="bg-white p-6 rounded-2xl shadow space-y-4">
+                <h2 class="text-lg font-bold text-sungDark">Manajemen Produk & Request Jastip</h2>
+                <form onsubmit="ownerAddProduct(event)" class="grid grid-cols-2 gap-3 bg-slate-50 p-4 rounded-xl border">
+                    <input type="text" id="new-prod-nama" placeholder="Nama Barang / Tiket" required class="col-span-2 border rounded p-2 text-sm">
+                    <select id="new-prod-kat" class="border rounded p-2 text-sm">
+                        <option value="Tiket Konser">Tiket Konser</option>
+                        <option value="Fashion">Fashion</option>
+                        <option value="Elektronik">Elektronik</option>
+                        <option value="Kuliner">Kuliner</option>
+                    </select>
+                    <input type="number" id="new-prod-harga" placeholder="Harga Asli (Rp)" required class="border rounded p-2 text-sm">
+                    <input type="number" id="new-prod-fee" placeholder="Jastip Fee (Rp)" required class="border rounded p-2 text-sm">
+                    <button type="submit" class="bg-sungTeal text-white font-bold rounded p-2 text-sm">+ Tambah Katalog</button>
+                </form>
+
+                <div id="owner-product-list" class="space-y-2 max-h-64 overflow-y-auto">
+                    <!-- List produk & request masuk -->
+                </div>
+            </section>
+
+           
+    <!-- ===================================================================== -->
+    <!-- MODAL CHECKOUT & KALKULATOR HARGA TRANSPARAN + PAYMENT GATEWAY        -->
+    <!-- ===================================================================== -->
+    <div id="checkout-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <h3 class="text-lg font-bold text-sungDark">Checkout & Rincian Biaya</h3>
+                <button onclick="closeCheckout()" class="text-slate-400 hover:text-red-500 font-bold">✕</button>
+            </div>
+
+            <div id="checkout-item-info" class="mb-4 bg-slate-50 p-3 rounded-xl border"></div>
+
+            <!-- Kalkulator Harga Transparan -->
+            <div class="bg-teal-50/60 border border-sungTeal/30 rounded-xl p-4 space-y-2 text-sm mb-4">
+                <div class="flex justify-between">
+                    <span>Harga Asli Barang/Tiket:</span>
+                    <span id="calc-harga" class="font-semibold">Rp 0</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>Biaya Jasa Titip (Jastip Fee):</span>
+                    <span id="calc-fee" class="font-semibold text-sungOrange">Rp 0</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>Biaya Pengiriman:</span>
+                    <span id="calc-ongkir" class="font-semibold">Rp 0</span>
+                </div>
+                <div class="border-t pt-2 flex justify-between text-base font-extrabold text-sungDark">
+                    <span>TOTAL PEMBAYARAN:</span>
+                    <span id="calc-total">Rp 0</span>
+                </div>
+            </div>
+
+            <!-- 3 Opsi Payment Gateway -->
+            <div class="mb-4">
+                <label class="block text-xs font-bold uppercase text-slate-600 mb-2">Pilih Metode Pembayaran</label>
+                <select id="checkout-payment" onchange="togglePaymentDetails()" class="w-full border rounded-xl p-2.5 text-sm font-semibold">
+                    <option value="QRIS">1. QRIS (Scan Otomatis Instan)</option>
+                    <option value="Transfer Bank">2. Transfer Bank / Virtual Account + Bukti</option>
+                    <option value="E-Wallet / COD">3. E-Wallet (GoPay/OVO/DANA) / Bayar di Tempat</option>
+                </select>
+
+                <!-- Detail QRIS -->
+                <div id="pay-detail-qris" class="mt-3 p-4 border rounded-xl text-center bg-white">
+                    <p class="text-xs font-bold mb-2">Scan QRIS SUNG AZ di bawah ini:</p>
+                    <img id="qris-img" src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=SUNG-AZ-JASTIP-PAYMENT" class="mx-auto border p-2 rounded-lg">
+                    <p class="text-[11px] text-slate-500 mt-2">Mendukung semua aplikasi M-Banking & E-Wallet</p>
+                </div>
+
+                <!-- Detail Transfer Bank -->
+                <div id="pay-detail-bank" class="hidden mt-3 p-4 border rounded-xl bg-slate-50 space-y-2 text-sm">
+                    <p class="font-bold text-sungDark">Transfer ke Rekening / VA Resmi:</p>
+                    <p class="font-mono bg-white p-2 rounded border">BCA: <strong>0000-0000-0000</strong> (a.n. DEMO SUNG AZ)</p>
+                    <label class="block text-xs font-bold mt-2">Upload Bukti Transfer (JPG/PNG):</label>
+                    <input type="file" id="bukti-transfer-file" accept="image/*" class="text-xs w-full">
+                </div>
+
+                <!-- Detail E-Wallet / COD -->
+                <div id="pay-detail-cod" class="hidden mt-3 p-4 border rounded-xl bg-amber-50 text-xs text-amber-900">
+                    Pembayaran via E-Wallet atau tunai saat barang tiba di alamat tujuan.
+                </div>
+            </div>
+
+            <button onclick="submitOrder()" class="w-full bg-sungOrange hover:opacity-95 text-white font-bold py-3 rounded-xl shadow-lg">
+                Konfirmasi & Buat Pesanan
+            </button>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- MODAL FORM REQUEST JASTIP CUSTOM                                      -->
+    <!-- ===================================================================== -->
+    <div id="request-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <h3 class="text-lg font-bold text-sungDark">Form Request Jastip Custom</h3>
+                <button onclick="document.getElementById('request-modal').classList.add('hidden')" class="text-slate-400 font-bold">✕</button>
+            </div>
+            <form onsubmit="submitCustomRequest(event)" class="space-y-3 text-sm">
+                <div>
+                    <label class="font-semibold block mb-1">Nama Barang / Tiket yang Dicari</label>
+                    <input type="text" id="req-nama" required placeholder="Contoh: Sepatu Ortuseight / Tiket Konser VIP" class="w-full border rounded-lg p-2">
+                </div>
+                <div>
+                    <label class="font-semibold block mb-1">Estimasi Harga Barang (Rp)</label>
+                    <input type="number" id="req-harga" required placeholder="500000" class="w-full border rounded-lg p-2">
+                </div>
+                <div>
+                    <label class="font-semibold block mb-1">Link Referensi Produk / Lokasi Beli</label>
+                    <input type="url" id="req-link" placeholder="https://..." class="w-full border rounded-lg p-2">
+                </div>
+                <div>
+                    <label class="font-semibold block mb-1">Catatan Tambahan (Ukuran, Warna, dll)</label>
+                    <textarea id="req-catatan" rows="2" class="w-full border rounded-lg p-2"></textarea>
+                </div>
+                <button type="submit" class="w-full bg-sungTeal text-white font-bold py-2.5 rounded-xl">Kirim Request ke Owner</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/database.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

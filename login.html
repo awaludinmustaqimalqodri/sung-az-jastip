@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Owner - SUNG AZ Jastip</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        sungTeal: '#0F4C5C',
+                        sungOrange: '#F3722C',
+                        sungDark: '#0B2536'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-100 flex items-center justify-center h-screen">
+
+    <div class="bg-white p-8 rounded-2xl shadow-xl max-w-sm w-full border-t-4 border-sungOrange">
+        <div class="text-center mb-6">
+            <h1 class="text-2xl font-extrabold text-sungDark">SUNG AZ OWNER</h1>
+            <p class="text-xs text-sungOrange font-bold mt-1">Apa Bae Dimari Bae</p>
+        </div>
+
+        <form onsubmit="handleLogin(event)" class="space-y-4">
+            <div>
+                <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Username Owner</label>
+                <input type="text" id="username" required class="w-full border rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-sungTeal" placeholder="Masukkan username">
+            </div>
+            <div>
+                <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Password</label>
+                <input type="password" id="password" required class="w-full border rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-sungTeal" placeholder="Masukkan password">
+            </div>
+            <button type="submit" class="w-full bg-sungTeal hover:bg-sungDark text-white font-bold py-3 rounded-xl shadow-lg transition">
+                Masuk Dashboard
+            </button>
+        </form>
+
+        <div class="mt-4 text-center">
+            <a href="index.html" class="text-xs text-slate-500 hover:underline">← Kembali ke Web Utama Pembeli</a>
+        </div>
+    </div>
+
+    <script>
+        function handleLogin(e) {
+            e.preventDefault();
+            const u = document.getElementById('username').value;
+            const p = document.getElementById('password').value;
+
+            // Kredensial demo lokal, bukan autentikasi untuk data produksi.
+            if (u === 'owner' && p === 'demo123') {
+                localStorage.setItem('sung_az_is_logged_in', 'true');
+                window.location.href = 'owner.html'; // Pindah ke halaman owner khusus
+            } else {
+                alert('Username atau Password salah!');
+            }
+        }
+    </script>
+</body>
+</html>
